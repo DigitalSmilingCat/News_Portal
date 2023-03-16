@@ -1,0 +1,107 @@
+from news.models import *
+
+1. Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+User.objects.create_user('Batman')
+User.objects.create_user('Joker')
+
+
+2. Создать два объекта модели Author, связанные с пользователями.
+user1 = User.objects.get(pk=1)
+user2 = User.objects.get(pk=2)
+Author.objects.create(user=user1)
+Author.objects.create(user=user2)
+
+
+3. Добавить 4 категории в модель Category.
+Category.objects.create(name='Games')
+Category.objects.create(name='Shooter')
+Category.objects.create(name='Fighting')
+Category.objects.create(name='Strategy')
+
+
+4. Добавить 2 статьи и 1 новость.
+author1 = Author.objects.get(pk=1)
+article_text1 = "StarCraft II is a science fiction real-time strategy video game developed and published by Blizzard Entertainment."
+Post.objects.create(type=article, title='StarCraft II', text=article_text1, author=author1)
+
+author2 = Author.objects.get(pk=2)
+article_text2 = "Left 4 Dead 2 is a 2009 first-person shooter game developed and published by Valve."
+Post.objects.create(type=article, title='Left 4 Dead 2', text=article_text2, author=author2)
+
+news_text = "Mortal Kombat 12 has been officially announced and it's coming very soon."
+Post.objects.create(type=news, title='Mortal Kombat 12 Announced', text=news_text, author=author2)
+
+
+5. Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+cat1 = Category.objects.get(pk=1)
+cat2 = Category.objects.get(pk=2)
+cat3 = Category.objects.get(pk=3)
+cat4 = Category.objects.get(pk=4)
+
+post1 = Post.objects.get(pk=1)
+post2 = Post.objects.get(pk=2)
+post3 = Post.objects.get(pk=3)
+
+post1.categories.add(cat1, cat4)
+post2.categories.add(cat1, cat2)
+post3.categories.add(cat1, cat3)
+
+
+6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+comment1 = 'StarCraft II - лучшая стратегия в мире!'
+Comment.objects.create(text=comment1, post=post1, user=user2)
+
+comment2 = 'Полностью согласен с вами!'
+Comment.objects.create(text=comment2, post=post1, user=user1)
+
+comment3 = 'Left 4 Dead 2 - лучший кооперативный шутер!'
+Comment.objects.create(text=comment3, post=post2, user=user1)
+
+comment4 = 'С нетерпением жду релиза игры.'
+Comment.objects.create(text=comment4, post=post3, user=user1)
+
+
+7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+post1.like()
+post1.like()
+post1.like()
+post1.like()
+post1.like()
+
+post2.like()
+post2.like()
+post2.dislike()
+
+post3.like()
+post3.dislike()
+post3.dislike()
+post3.dislike()
+
+comment1=Comment.objects.get(pk=1)
+comment2=Comment.objects.get(pk=2)
+comment3=Comment.objects.get(pk=3)
+comment4=Comment.objects.get(pk=4)
+
+comment1.like()
+comment1.like()
+comment2.like()
+comment3.like()
+comment4.dislike()
+
+
+8.Обновить рейтинги пользователей.
+author1.update_rating()
+author2.update_rating()
+
+
+9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+User.objects.all().order_by('-author__rating').values('username', 'author__rating')[0]
+
+
+10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+Post.objects.all().order_by('-rating').values('date__date', 'author__user__username', 'rating', 'title')[0]
+Post.objects.all().order_by('-rating')[0].preview()
+
+
+11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+Comment.objects.filter(post=best_post).values('date__date', 'user__username', 'rating', 'text')
