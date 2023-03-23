@@ -100,8 +100,8 @@ User.objects.all().order_by('-author__rating').values('username', 'author__ratin
 
 10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
 Post.objects.all().order_by('-rating').values('date__date', 'author__user__username', 'rating', 'title')[0]
-Post.objects.all().order_by('-rating')[0].preview()
-
+best_post = Post.objects.all().order_by('-rating')[0]
+best_post.preview()
 
 11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
 Comment.objects.filter(post=best_post).values('date__date', 'user__username', 'rating', 'text')
