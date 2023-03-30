@@ -3,14 +3,18 @@
 {% load custom_tags %}
 
 {% block title %}
-News
+Search
 {% endblock title %}
 
 {% block content %}
-    <h1>Всего новостей и статей: {{ news_quantity }}</h1>
-    <h3>На этой странице: {{ news | length }}</h3>
+    <h1>Поиск</h1>
     <hr>
-    {% if news %}
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="Найти" />
+    </form>
+    <hr>
+    {% if search %}
         <table>
             <table border="1">
             <tr>
@@ -18,7 +22,7 @@ News
                 <td><strong>Дата</strong></td>
                 <td><strong>Содержимое</strong></td>
             </tr>
-            {% for post in news %}
+            {% for post in search %}
             <tr>
                 <td>{{ post.title|censor }}</td>
                 <td>{{ post.date|date:'d.m.y'  }}</td>
@@ -53,6 +57,6 @@ News
         {% endif %}
 
     {% else %}
-        <h2>Новостей нет!</h2>
+        <h2>Подходящих новостей нет!</h2>
     {% endif %}
 {% endblock content %}

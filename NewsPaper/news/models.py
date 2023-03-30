@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User  # Используется для связи Author и Comment
 from django.db.models import Sum  # Используется для вычисления рейтинга автора
 from news.config import *  # Используется список TYPES для поста
+from django.urls import reverse
 
 
 class Author(models.Model):  # Модель Автор
@@ -11,11 +12,11 @@ class Author(models.Model):  # Модель Автор
 
     def update_rating(self):
         articles = Post.objects.filter(author=self)  # Все статьи автора, переданного в self
-        articles_rating = articles.aggregate(Sum('rating')).get('rating__sum') * 3  # Рейтинг всех статей автора * 3
+        articles_rating = articles.aggregate(Sum('rating', default=0)).get('rating__sum') * 3  # Рейтинг всех статей автора * 3
         comments = Comment.objects.filter(user=self.user)  # Все комментарии автора
-        comments_rating = comments.aggregate(Sum('rating')).get('rating__sum')  # Рейтинг всех комментариев автора
+        comments_rating = comments.aggregate(Sum('rating', default=0)).get('rating__sum')  # Рейтинг всех комментариев автора
         post_comments = Comment.objects.filter(post__author=self)  # Все комментарии под статьями автора
-        post_comments_rating = post_comments.aggregate(Sum('rating')).get('rating__sum')  # Суммарный рейтинг ком.
+        post_comments_rating = post_comments.aggregate(Sum('rating', default=0)).get('rating__sum')  # Суммарный рейтинг ком.
         self.rating = articles_rating + comments_rating + post_comments_rating  # Итоговый рейтинг
         self.save()  # Сохранение изменений
 
@@ -53,6 +54,9 @@ class Post(models.Model):  # Модель Пост
 
     def __str__(self):  # Изменяем метод для удобства отладки
         return f'{self.type} / {self.title} / {self.date} / {self.rating}'
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):  # Модель Пост-Категория, связывает между собой модели Post и Category

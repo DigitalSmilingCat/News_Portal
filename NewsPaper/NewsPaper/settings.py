@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'Use your key'
+SECRET_KEY = 'Insert your key'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'news',
     'django.contrib.sites',
     'django.contrib.flatpages',
+    'django_filters',
 ]
 
 SITE_ID = 1
