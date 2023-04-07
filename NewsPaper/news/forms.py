@@ -6,7 +6,6 @@ from .models import *
 class PostForm(forms.ModelForm):
     title = forms.CharField(label='Заголовок')
     text = forms.Textarea
-    author = forms.ModelChoiceField(label='Имя автора', queryset=Author.objects.all())
     categories = forms.ModelMultipleChoiceField(label='Выберите категории', queryset=Category.objects.all())
 
     class Meta:
@@ -14,7 +13,6 @@ class PostForm(forms.ModelForm):
         fields = [
             'title',
             'text',
-            'author',
             'categories',
         ]
 

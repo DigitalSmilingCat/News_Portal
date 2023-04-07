@@ -15,8 +15,6 @@ Post
 Автор: {{ post.author.user.username }} ({{ post.author.rating }})
 <hr>
 Категории: {% for category in post.categories.all %}
-    <td>
-        <th>{{ category.name }}</th>
-    </td>
+{{ category.name }}
 {% endfor %}
 {% endblock content %}
