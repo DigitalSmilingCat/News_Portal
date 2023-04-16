@@ -14,22 +14,26 @@ Search
         <input type="submit" value="Найти" />
     </form>
     <hr>
-    {% if search %}
-        <table>
-            <table border="1">
-            <tr>
-                <td><strong>Заголовок</strong></td>
-                <td><strong>Дата</strong></td>
-                <td><strong>Содержимое</strong></td>
-            </tr>
-            {% for post in search %}
-            <tr>
-                <td>{{ post.title|censor }}</td>
-                <td>{{ post.date|date:'d.m.y'  }}</td>
-                <td>{{ post.text|censor|truncatechars:20 }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+{% if search %}
+<h1 class="text-center">Результаты</h1>
+<h3 class="text-center"><span class="text-muted fs-6 fw-normal">Всего: {{ page_obj.paginator.count }} / </span>
+<span class="text-muted fs-6 fw-normal">На этой странице: {{ search | length }}</span></h3>
+<hr>
+<ul class="list-group list-group-flush">
+    {% for post in search %}
+        <li class="list-group-item">
+            <small class="fw-bold">{{ post.date|date:'d.m.y' }} </small>
+            <a href="/posts/{{ post.id }}">{{ post.title }}</a>
+            <small class="text-muted ">({{ post.type }}, автор: {{ post.author.user.username }})</small> <br>
+            <small class="fw-bold">категории:
+                {% for category in post.categories.all %}
+                <a href="/posts/categories/{{ category.id }}">{{ category }}</a>
+                {% endfor %}
+            </small>
+            <p>{{ post.text|censor|truncatechars:200 }}</p>
+        </li>
+    {% endfor %}
+</ul>
 
         <td>Страница: </td>
         {% if page_obj.has_previous %}

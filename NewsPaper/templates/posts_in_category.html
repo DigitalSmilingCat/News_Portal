@@ -2,22 +2,18 @@
 {% load custom_filters %}
 {% load custom_tags %}
 
-{% block title %}
-News
-{% endblock title %}
-
 {% block content %}
-{% if news %}
-<h1 class="text-center">Новости</h1>
+{% if posts_in_category %}
+<h1 class="text-center">Категория {{ cat }}</h1>
 <h3 class="text-center"><span class="text-muted fs-6 fw-normal">Всего: {{ page_obj.paginator.count }} / </span>
-<span class="text-muted fs-6 fw-normal">На этой странице: {{ news | length }}</span></h3>
+<span class="text-muted fs-6 fw-normal">На этой странице: {{ posts_in_category | length }}</span></h3>
 <hr>
 <ul class="list-group list-group-flush">
-    {% for post in news %}
+    {% for post in posts_in_category %}
         <li class="list-group-item">
             <small class="fw-bold">{{ post.date|date:'d.m.y' }} </small>
             <a href="/posts/{{ post.id }}">{{ post.title }}</a>
-            <small class="text-muted ">({{ post.type }}, автор: {{ post.author.user.username }})</small> <br>
+            <small class="text-muted ">({{ post.get_type_display }}, автор: {{ post.author.user.username }})</small> <br>
             <small class="fw-bold">категории:
                 {% for category in post.categories.all %}
                 <a href="/posts/categories/{{ category.id }}">{{ category }}</a>
@@ -28,7 +24,7 @@ News
     {% endfor %}
 </ul>
 
-        <td>Страница: </td>
+            <td>Страница: </td>
         {% if page_obj.has_previous %}
             <a href="?{% url_replace page=1 %}">1</a>
             {% if page_obj.number == 3 %}
@@ -52,8 +48,18 @@ News
                 <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
             {% endif %}
         {% endif %}
-
     {% else %}
-        <h2>Новостей нет!</h2>
+        <h2>Тут ничего нет!</h2>
     {% endif %}
+{% if user not in subscribers %}
+    <form action="{% url 'subscribe' cat.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Подписаться"/>
+    </form>
+{% else %}
+    <form action="{% url 'unsubscribe' cat.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Отписаться"/>
+    </form>
+{% endif %}
 {% endblock content %}

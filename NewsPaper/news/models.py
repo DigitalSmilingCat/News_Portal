@@ -5,10 +5,10 @@ from news.config import *  # Используется список TYPES для 
 from django.urls import reverse
 
 
-class Author(models.Model):  # Модель Автор
-    rating = models.IntegerField(default=0)  # Рейтинг автора
+class Author(models.Model):
+    rating = models.IntegerField(default=0)
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Связь "один к одному" с встроенной моделью User
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def update_rating(self):
         articles = Post.objects.filter(author=self)  # Все статьи автора, переданного в self
@@ -20,62 +20,72 @@ class Author(models.Model):  # Модель Автор
         self.rating = articles_rating + comments_rating + post_comments_rating  # Итоговый рейтинг
         self.save()  # Сохранение изменений
 
-    def __str__(self):  # Изменяем метод для удобства отладки
+    def __str__(self):
         return f'{self.user.username} / {self.rating}'
 
 
-class Category(models.Model):  # Модель Категория
-    name = models.CharField(max_length=255, unique=True)  # Имя категории
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
 
-    def __str__(self):  # Изменяем метод для удобства отладки
+    subscribers = models.ManyToManyField(User, related_name='categories', through='CategorySubscriber')
+
+    def __str__(self):
         return f'{self.name}'
 
 
-class Post(models.Model):  # Модель Пост
-    type = models.CharField(max_length=1, choices=TYPES, default=article)  # Тип поста (статья или новость)
-    date = models.DateTimeField(auto_now_add=True)  # Дата и время создания поста
-    title = models.CharField(max_length=255)  # Заголовок поста
-    text = models.TextField()  # Текст поста
-    rating = models.IntegerField(default=0)  # Рейтинг поста
+class Post(models.Model):
+    type = models.CharField(max_length=1, choices=TYPES, default=article)
+    date = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=255)
+    text = models.TextField()
+    rating = models.IntegerField(default=0)
 
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)  # Связь "один ко многим" с моделью Author
-    categories = models.ManyToManyField(Category, through='PostCategory')  # Связь "многие ко многим" с Category
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    categories = models.ManyToManyField(Category, through='PostCategory')
 
-    def like(self):  # Метод увеличивает рейтинг на единицу
+    class Meta:
+        ordering = ['-date']
+
+    def like(self):
         self.rating += 1
         self.save()
 
-    def dislike(self):  # Метод уменьшает рейтинг на единицу
+    def dislike(self):
         self.rating -= 1
         self.save()
 
     def preview(self):  # Метод выводит первые 124 символа в тексте поста, за ними следует многоточие
         return f'{self.text[:124]}...'
 
-    def __str__(self):  # Изменяем метод для удобства отладки
+    def __str__(self):
         return f'{self.type} / {self.title} / {self.date} / {self.rating}'
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])
 
 
-class PostCategory(models.Model):  # Модель Пост-Категория, связывает между собой модели Post и Category
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # Связь "один ко многим" с моделью Post
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)  # Связь "один ко многим" с моделью Category
+class PostCategory(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
-class Comment(models.Model):  # Модель Комментарий
-    text = models.TextField()  # Текст комментария
-    date = models.DateTimeField(auto_now_add=True)  # Дата и время создания комментария
-    rating = models.IntegerField(default=0)  # Рейтинг комментария
+class CategorySubscriber(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # Связь "один ко многим" с моделью Post
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Связь "один ко многим" с моделью User
 
-    def like(self):  # Метод увеличивает рейтинг на единицу
+class Comment(models.Model):
+    text = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    rating = models.IntegerField(default=0)
+
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def like(self):
         self.rating += 1
         self.save()
 
-    def dislike(self):  # Метод уменьшает рейтинг на единицу
+    def dislike(self):
         self.rating -= 1
         self.save()

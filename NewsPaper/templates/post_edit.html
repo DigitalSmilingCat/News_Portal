@@ -1,12 +1,19 @@
 {% extends 'flatpages/default.html' %}
 
 {% block content %}
-
-<h1>Редактирование</h1>
+{% if 'create' in request.path %}
+    <h1>Опубликовать заметку</h1>
+{% elif 'edit' in request.path %}
+    <h1>Редактирование</h1>
+{% endif %}
 <hr>
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Сохранить результат" />
-</form>
+{% if limit_posts %}
+    <h2>Можно опубликовать не более трех заметок в день. Возвращайтесь завтра.</h2>
+{% else %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Сохранить результат" />
+    </form>
+{% endif %}
 {% endblock content %}
