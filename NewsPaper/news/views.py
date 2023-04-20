@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import HttpResponseRedirect
 from django.utils.timezone import datetime
+from .tasks import notify_subscribers
 
 
 class PostsList(ListView):
@@ -98,7 +99,10 @@ class NewsCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         post = form.save(commit=False)
         post.type = 'N'
         post.author = Author.objects.get(user_id=self.request.user.id)
-        return super().form_valid(form)
+        post.save()
+        result = super().form_valid(form)
+        notify_subscribers.apply_async([self.object.pk])
+        return result
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -118,7 +122,10 @@ class ArticleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         post = form.save(commit=False)
         post.type = 'A'
         post.author = Author.objects.get(user_id=self.request.user.id)
-        return super().form_valid(form)
+        post.save()
+        result = super().form_valid(form)
+        notify_subscribers.apply_async([self.object.pk])
+        return result
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
