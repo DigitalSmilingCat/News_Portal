@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import HttpResponseRedirect
 from django.utils.timezone import datetime
 from .tasks import notify_subscribers
+from django.core.cache import cache
 
 
 class PostsList(ListView):
@@ -54,8 +55,8 @@ class ArticlesList(ListView):
 
 class PostDetail(DetailView):
     model = Post
-    template_name = 'post.html'
     context_object_name = 'post'
+    queryset = Post.objects.all()
 
     def get_template_names(self):
         post = self.get_object()
@@ -69,6 +70,13 @@ class PostDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['post_author'] = self.get_object().author.user == self.request.user
         return context
+
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f"post-{self.kwargs['pk']}", None)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f"post-{self.kwargs['pk']}", obj)
+        return obj
 
 
 class PostSearch(ListView):
