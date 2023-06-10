@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load i18n %}
+{% load tz %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page title</title>
+    <style>
+        body {background-color: {% if current_time.hour >= 19 or current_time.hour <= 7 %} darkcyan {% else %} PapayaWhip {% endif %};}
+    </style>
+</head>
+<body>
+
+    <form action="{% url 'set_language' %}" method="POST"> {% csrf_token %}
+        <input type="hidden" name="next" value="{{ redirect_to }}">
+        <select name="language" id="">
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+
+            {% for language in languages %}
+                <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected >{% endif %} >
+                    {{ language.name_local }} - {{ language.code }}
+                </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="set">
+    </form>
+
+    {% get_current_timezone as TIME_ZONE %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <select name="timezone">
+            {% for tz in timezones %}
+            <option value="{{ tz }}"{% if tz == TIME_ZONE %} selected{% endif %}>{{ tz }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Set">
+    </form>
+
+    {{ TIME_ZONE }}
+    {{ current_time|timezone:TIME_ZONE }}
+
+    {% for model in models %}
+    <div class="model-class">
+        {{ model.name }}
+    </div>
+    {% endfor %}
+
+
+</body>
+</html>

@@ -10,6 +10,30 @@ from django.shortcuts import HttpResponseRedirect
 from django.utils.timezone import datetime
 from .tasks import notify_subscribers
 from django.core.cache import cache
+from django.http.response import HttpResponse
+from django.views import View
+from django.utils.translation import gettext as _
+from django.utils import timezone
+# from django.utils.translation import activate, get_supported_language_variant, LANGUAGE_SESSION_KEY
+import pytz
+
+
+class Index(View):
+    def get(self, request):
+        models = Category.objects.all()
+
+        context = {
+            'models': models,
+            'current_time': timezone.now(),
+            'timezones': pytz.common_timezones
+        }
+
+        return HttpResponse(render(request, 'index.html', context))
+
+
+    def post(self, request):
+        request.session['django_timezone'] = request.POST['timezone']
+        return HttpResponseRedirect(reverse('index'))
 
 
 class PostsList(ListView):

@@ -23,4 +23,5 @@ urlpatterns = [
     path('categories/<int:pk>/', PostsInCategory.as_view(), name='posts_in_category'),
     path('categories/<int:pk>/subscribe/', subscribe, name='subscribe'),
     path('categories/<int:pk>/unsubscribe/', unsubscribe, name='unsubscribe'),
+    path('index/', Index.as_view(), name='index'),
 ]
