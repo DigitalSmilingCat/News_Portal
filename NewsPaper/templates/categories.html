@@ -5,7 +5,7 @@
 <hr>
     {% if categories %}
         {% for category in categories %}
-            <a href="/posts/categories/{{ category.id }}">{{ category }}</a><br>
+            <a href="{% url 'posts_in_category' category.id %}">{{ category }}</a><br>
         {% endfor %}
     {% else %}
         <h2>Список категорий пуст!</h2>

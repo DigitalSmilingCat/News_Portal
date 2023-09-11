@@ -15,11 +15,11 @@ Post
 Автор: {{ post.author.user.username }} ({{ post.author.rating }})
 <hr>
 Категории: {% for category in post.categories.all %}
-<a href="/posts/categories/{{ category.id }}">{{ category }}</a>
+<a href="{% url 'posts_in_category' category.id %}">{{ category }}</a>
 {% endfor %}
 <hr>
 {% if post_author %}
-<button> <a href="/posts/{{ post.id }}/edit/">Редактировать</a> </button>
-<button> <a href="/posts/{{ post.id }}/delete/">Удалить</a> </button>
+<button> <a href="{% url 'post_update' post.id %}">Редактировать</a> </button>
+<button> <a href="{% url 'post_delete' post.id %}">Удалить</a> </button>
 {% endif %}
 {% endblock content %}

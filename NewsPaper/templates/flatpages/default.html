@@ -24,17 +24,17 @@
                <div class="collapse navbar-collapse" id="navbarResponsive">
                    <ul class="navbar-nav ml-auto">
                        <li class="nav-item active">
-                           <a class="nav-link" href="/posts/">Публикации
+                           <a class="nav-link" href="{% url 'posts_list' %}">Публикации
                            </a>
                        </li>
                        <li class="nav-item">
-                           <a class="nav-link" href="/posts/search/">Поиск</a>
+                           <a class="nav-link" href="{% url 'search' %}">Поиск</a>
                        </li>
                        <li class="nav-item">
-                           <a class="nav-link" href="/posts/articles/create">Написать статью</a>
+                           <a class="nav-link" href="{% url 'article_create' %}">Написать статью</a>
                        </li>
                        <li class="nav-item">
-                           <a class="nav-link" href="/posts/news/create">Написать новость</a>
+                           <a class="nav-link" href="{% url 'news_create' %}">Написать новость</a>
                        </li>
                    </ul>
                </div>
@@ -46,7 +46,6 @@
            <div class="row">
                <div class="col-lg-12 text-left">
                    {% block content %}
-                   {{ flatpage.content }}
                    {% endblock content %}
                </div>
            </div>

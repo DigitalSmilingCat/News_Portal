@@ -12,14 +12,14 @@ class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def update_rating(self):
-        articles = Post.objects.filter(author=self)  # Все статьи автора, переданного в self
-        articles_rating = articles.aggregate(Sum('rating', default=0)).get('rating__sum') * 3  # Рейтинг всех статей автора * 3
-        comments = Comment.objects.filter(user=self.user)  # Все комментарии автора
-        comments_rating = comments.aggregate(Sum('rating', default=0)).get('rating__sum')  # Рейтинг всех комментариев автора
-        post_comments = Comment.objects.filter(post__author=self)  # Все комментарии под статьями автора
-        post_comments_rating = post_comments.aggregate(Sum('rating', default=0)).get('rating__sum')  # Суммарный рейтинг ком.
-        self.rating = articles_rating + comments_rating + post_comments_rating  # Итоговый рейтинг
-        self.save()  # Сохранение изменений
+        articles = Post.objects.filter(author=self)
+        articles_rating = articles.aggregate(Sum('rating', default=0)).get('rating__sum') * 3
+        comments = Comment.objects.filter(user=self.user)
+        comments_rating = comments.aggregate(Sum('rating', default=0)).get('rating__sum')
+        post_comments = Comment.objects.filter(post__author=self)
+        post_comments_rating = post_comments.aggregate(Sum('rating', default=0)).get('rating__sum')
+        self.rating = articles_rating + comments_rating + post_comments_rating
+        self.save()
 
     def __str__(self):
         return f'{self.user.username} / {self.rating}'
@@ -55,7 +55,7 @@ class Post(models.Model):
         self.rating -= 1
         self.save()
 
-    def preview(self):  # Метод выводит первые 124 символа в тексте поста, за ними следует многоточие
+    def preview(self):
         return f'{self.text[:124]}...'
 
     def __str__(self):

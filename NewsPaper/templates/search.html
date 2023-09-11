@@ -23,11 +23,11 @@ Search
     {% for post in search %}
         <li class="list-group-item">
             <small class="fw-bold">{{ post.date|date:'d.m.y' }} </small>
-            <a href="/posts/{{ post.id }}">{{ post.title }}</a>
+            <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
             <small class="text-muted ">({{ post.type }}, автор: {{ post.author.user.username }})</small> <br>
             <small class="fw-bold">категории:
                 {% for category in post.categories.all %}
-                <a href="/posts/categories/{{ category.id }}">{{ category }}</a>
+                <a href="{% url 'posts_in_category' category.id %}">{{ category }}</a>
                 {% endfor %}
             </small>
             <p>{{ post.text|censor|truncatechars:200 }}</p>
